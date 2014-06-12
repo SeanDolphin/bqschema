@@ -5,7 +5,6 @@ import (
 
 	"errors"
 	"reflect"
-
 	"time"
 )
 
@@ -15,7 +14,7 @@ var (
 	NotStruct    = errors.New("Can not convert non structs")
 )
 
-func StructToSchema(src interface{}) (*bigquery.TableSchema, error) {
+func ToSchema(src interface{}) (*bigquery.TableSchema, error) {
 	value := reflect.ValueOf(src)
 	t := value.Type()
 
@@ -78,6 +77,14 @@ func StructToSchema(src interface{}) (*bigquery.TableSchema, error) {
 	return schema, nil
 }
 
+func MustToSchema(src interface{}) *bigquery.TableSchema {
+	schema, err := ToSchema(src)
+	if err != nil {
+		panic(err)
+	}
+	return schema
+}
+
 func simpleType(kind reflect.Kind) (string, bool) {
 	isSimple := true
 	t := ""
@@ -101,7 +108,7 @@ func structConversion(src interface{}) (string, []*bigquery.TableFieldSchema, er
 	if v.Type().ConvertibleTo(reflect.TypeOf(time.Time{})) {
 		return "timestamp", nil, nil
 	} else {
-		schema, err := StructToSchema(src)
+		schema, err := ToSchema(src)
 		return "record", schema.Fields, err
 	}
 }

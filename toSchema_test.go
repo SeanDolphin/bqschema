@@ -608,7 +608,7 @@ var _ = Describe("ToSchema", func() {
 			object := data[0]
 			schema := data[1]
 			It(data[2].(string), func() {
-				result, err := bqschema.StructToSchema(object)
+				result, err := bqschema.ToSchema(object)
 				Expect(err).To(BeNil())
 				Expect(reflect.DeepEqual(schema, *result)).To(BeTrue())
 			})
@@ -642,7 +642,7 @@ var _ = Describe("ToSchema", func() {
 			object := data[0]
 			exceptedError := data[1]
 			It(data[2].(string), func() {
-				_, err := bqschema.StructToSchema(object)
+				_, err := bqschema.ToSchema(object)
 				Expect(err).NotTo(BeNil())
 				Expect(err).To(Equal(exceptedError))
 			})
