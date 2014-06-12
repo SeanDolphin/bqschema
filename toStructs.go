@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func ToStructs(result bigquery.QueryResponse, dst interface{}) error {
+func ToStructs(result *bigquery.QueryResponse, dst interface{}) error {
 	var err error
 	value := reflect.Indirect(reflect.ValueOf(dst))
 
