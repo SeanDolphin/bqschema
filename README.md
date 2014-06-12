@@ -1,2 +1,2 @@
-go-bq-schema
+bqschema
 ============
