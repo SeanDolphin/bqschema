@@ -42,16 +42,16 @@ var _ = Describe("ToStructs", func() {
 					&bigquery.TableRow{
 						F: []*bigquery.TableCell{
 							&bigquery.TableCell{
-								V: 1,
+								V: "1",
 							},
 							&bigquery.TableCell{
-								V: 2.0,
+								V: "2.0",
 							},
 							&bigquery.TableCell{
 								V: "some",
 							},
 							&bigquery.TableCell{
-								V: false,
+								V: "false",
 							},
 						},
 					},
@@ -111,16 +111,16 @@ var _ = Describe("ToStructs", func() {
 					&bigquery.TableRow{
 						F: []*bigquery.TableCell{
 							&bigquery.TableCell{
-								V: 1,
+								V: "1",
 							},
 							&bigquery.TableCell{
-								V: 2.0,
+								V: "2.0",
 							},
 							&bigquery.TableCell{
 								V: "some",
 							},
 							&bigquery.TableCell{
-								V: false,
+								V: "false",
 							},
 						},
 					},
