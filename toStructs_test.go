@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("FromQuery", func() {
+var _ = Describe("ToStructs", func() {
 	Context("when converting result rows to array of structs", func() {
 		It("will fill an array of structs of simple types whos names match", func() {
 			response := bigquery.QueryResponse{
