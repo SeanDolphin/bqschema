@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+
+	// "log"
 )
 
 func ToStructs(result *bigquery.QueryResponse, dst interface{}) error {
@@ -34,22 +36,29 @@ func ToStructs(result *bigquery.QueryResponse, dst interface{}) error {
 				if field.IsValid() {
 					switch schemaField.Type {
 					case "FLOAT":
-						var f float64
-						f, err = strconv.ParseFloat(cell.V.(string), 64)
-						cell.V = f
+						f, err := strconv.ParseFloat(cell.V.(string), 64)
+						if err == nil {
+							field.SetFloat(f)
+						} else {
+							return err
+						}
 					case "INTEGER":
-						var i int
-						i, err = strconv.Atoi(cell.V.(string))
-						cell.V = i
+						i, err := strconv.ParseInt(cell.V.(string), 10, 64)
+						if err == nil {
+							field.SetInt(i)
+						} else {
+							return err
+						}
 					case "BOOLEAN":
-						var b bool
-						b, err = strconv.ParseBool(cell.V.(string))
-						cell.V = b
+						b, err := strconv.ParseBool(cell.V.(string))
+						if err == nil {
+							field.SetBool(b)
+						} else {
+							return err
+						}
+					default:
+						field.Set(reflect.ValueOf(cell.V))
 					}
-					if err != nil {
-						return err
-					}
-					field.Set(reflect.ValueOf(cell.V))
 
 				}
 			}

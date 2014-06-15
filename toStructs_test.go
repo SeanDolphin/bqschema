@@ -19,22 +19,22 @@ var _ = Describe("ToStructs", func() {
 						&bigquery.TableFieldSchema{
 							Mode: "required",
 							Name: "A",
-							Type: "integer",
+							Type: "INTEGER",
 						},
 						&bigquery.TableFieldSchema{
 							Mode: "required",
 							Name: "B",
-							Type: "float",
+							Type: "FLOAT",
 						},
 						&bigquery.TableFieldSchema{
 							Mode: "required",
 							Name: "C",
-							Type: "string",
+							Type: "STRING",
 						},
 						&bigquery.TableFieldSchema{
 							Mode: "required",
 							Name: "D",
-							Type: "boolean",
+							Type: "BOOLEAN",
 						},
 					},
 				},
@@ -88,22 +88,22 @@ var _ = Describe("ToStructs", func() {
 						&bigquery.TableFieldSchema{
 							Mode: "required",
 							Name: "lower",
-							Type: "integer",
+							Type: "INTEGER",
 						},
 						&bigquery.TableFieldSchema{
 							Mode: "required",
 							Name: "UPPER",
-							Type: "float",
+							Type: "FLOAT",
 						},
 						&bigquery.TableFieldSchema{
 							Mode: "required",
 							Name: "Title",
-							Type: "string",
+							Type: "STRING",
 						},
 						&bigquery.TableFieldSchema{
 							Mode: "required",
 							Name: "camelCase",
-							Type: "boolean",
+							Type: "BOOLEAN",
 						},
 					},
 				},
@@ -144,6 +144,95 @@ var _ = Describe("ToStructs", func() {
 			}
 
 			var dst []test2
+
+			err := bqschema.ToStructs(response, &dst)
+			Expect(err).To(BeNil())
+			Expect(reflect.DeepEqual(expectedResult, dst)).To(BeTrue())
+		})
+
+		It("will fill an array of structs of non standard types", func() {
+			response := &bigquery.QueryResponse{
+				Schema: &bigquery.TableSchema{
+					Fields: []*bigquery.TableFieldSchema{
+						&bigquery.TableFieldSchema{
+							Mode: "required",
+							Name: "I64",
+							Type: "INTEGER",
+						},
+						&bigquery.TableFieldSchema{
+							Mode: "required",
+							Name: "I32",
+							Type: "INTEGER",
+						},
+						&bigquery.TableFieldSchema{
+							Mode: "required",
+							Name: "I16",
+							Type: "INTEGER",
+						},
+						&bigquery.TableFieldSchema{
+							Mode: "required",
+							Name: "I8",
+							Type: "INTEGER",
+						},
+						&bigquery.TableFieldSchema{
+							Mode: "required",
+							Name: "F64",
+							Type: "FLOAT",
+						},
+						&bigquery.TableFieldSchema{
+							Mode: "required",
+							Name: "F32",
+							Type: "FLOAT",
+						},
+					},
+				},
+				Rows: []*bigquery.TableRow{
+					&bigquery.TableRow{
+						F: []*bigquery.TableCell{
+							&bigquery.TableCell{
+								V: "1",
+							},
+							&bigquery.TableCell{
+								V: "1",
+							},
+							&bigquery.TableCell{
+								V: "1",
+							},
+							&bigquery.TableCell{
+								V: "1",
+							},
+							&bigquery.TableCell{
+								V: "2.0",
+							},
+							&bigquery.TableCell{
+								V: "2.0",
+							},
+						},
+					},
+				},
+			}
+
+			type test3 struct {
+				I64 int64
+				I32 int32
+				I16 int16
+				I8  int8
+				F64 float64
+				F32 float32
+			}
+
+			expectedResult := []test3{
+				test3{
+					I64: 1,
+					I32: 1,
+					I16: 1,
+					I8:  1,
+					F64: 2.0,
+					F32: 2.0,
+				},
+			}
+
+			var dst []test3
 
 			err := bqschema.ToStructs(response, &dst)
 			Expect(err).To(BeNil())
