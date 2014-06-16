@@ -34,29 +34,37 @@ func ToStructs(result *bigquery.QueryResponse, dst interface{}) error {
 			if name, ok := nameMap[strings.ToLower(schemaField.Name)]; ok {
 				field := item.FieldByName(name)
 				if field.IsValid() {
-					switch schemaField.Type {
-					case "FLOAT":
+					switch field.Kind() {
+					case reflect.Float64, reflect.Float32:
 						f, err := strconv.ParseFloat(cell.V.(string), 64)
 						if err == nil {
 							field.SetFloat(f)
 						} else {
 							return err
 						}
-					case "INTEGER":
+					case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 						i, err := strconv.ParseInt(cell.V.(string), 10, 64)
 						if err == nil {
 							field.SetInt(i)
 						} else {
 							return err
 						}
-					case "BOOLEAN":
+					case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+						i, err := strconv.ParseUint(cell.V.(string), 10, 64)
+						if err == nil {
+							field.SetUint(i)
+						} else {
+							return err
+						}
+
+					case reflect.Bool:
 						b, err := strconv.ParseBool(cell.V.(string))
 						if err == nil {
 							field.SetBool(b)
 						} else {
 							return err
 						}
-					default:
+					case reflect.String:
 						field.Set(reflect.ValueOf(cell.V))
 					}
 

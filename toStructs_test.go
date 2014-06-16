@@ -239,5 +239,84 @@ var _ = Describe("ToStructs", func() {
 			Expect(reflect.DeepEqual(expectedResult, dst)).To(BeTrue())
 		})
 
+		It("will fill an array of structs of unsigned ints", func() {
+			response := &bigquery.QueryResponse{
+				Schema: &bigquery.TableSchema{
+					Fields: []*bigquery.TableFieldSchema{
+						&bigquery.TableFieldSchema{
+							Mode: "required",
+							Name: "I64",
+							Type: "INTEGER",
+						},
+						&bigquery.TableFieldSchema{
+							Mode: "required",
+							Name: "I32",
+							Type: "INTEGER",
+						},
+						&bigquery.TableFieldSchema{
+							Mode: "required",
+							Name: "I16",
+							Type: "INTEGER",
+						},
+						&bigquery.TableFieldSchema{
+							Mode: "required",
+							Name: "I8",
+							Type: "INTEGER",
+						},
+						&bigquery.TableFieldSchema{
+							Mode: "required",
+							Name: "I",
+							Type: "INTEGER",
+						},
+					},
+				},
+				Rows: []*bigquery.TableRow{
+					&bigquery.TableRow{
+						F: []*bigquery.TableCell{
+							&bigquery.TableCell{
+								V: "1",
+							},
+							&bigquery.TableCell{
+								V: "1",
+							},
+							&bigquery.TableCell{
+								V: "1",
+							},
+							&bigquery.TableCell{
+								V: "1",
+							},
+							&bigquery.TableCell{
+								V: "1",
+							},
+						},
+					},
+				},
+			}
+
+			type test4 struct {
+				I64 uint64
+				I32 uint32
+				I16 uint16
+				I8  uint8
+				I   uint
+			}
+
+			expectedResult := []test4{
+				test4{
+					I64: 1,
+					I32: 1,
+					I16: 1,
+					I8:  1,
+					I:   1,
+				},
+			}
+
+			var dst []test4
+
+			err := bqschema.ToStructs(response, &dst)
+			Expect(err).To(BeNil())
+			Expect(reflect.DeepEqual(expectedResult, dst)).To(BeTrue())
+		})
+
 	})
 })
