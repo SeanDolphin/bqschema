@@ -59,3 +59,7 @@ func main() {
 }
 
 ~~~
+
+## Documentation
+
+Documentation is available at https://godoc.org/github.com/SeanDolphin/bqschema
