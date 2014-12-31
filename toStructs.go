@@ -1,7 +1,7 @@
 package bqschema
 
 import (
-	"code.google.com/p/google-api-go-client/bigquery/v2"
+	"google.golang.org/api/bigquery/v2"
 
 	"reflect"
 	"strconv"

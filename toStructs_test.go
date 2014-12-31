@@ -1,8 +1,8 @@
 package bqschema_test
 
 import (
-	"code.google.com/p/google-api-go-client/bigquery/v2"
 	"github.com/SeanDolphin/bqschema"
+	"google.golang.org/api/bigquery/v2"
 
 	"reflect"
 

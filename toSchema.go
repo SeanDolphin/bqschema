@@ -1,7 +1,8 @@
 package bqschema
 
 import (
-	"code.google.com/p/google-api-go-client/bigquery/v2"
+	"strings"
+	"google.golang.org/api/bigquery/v2"
 
 	"errors"
 	"reflect"
@@ -43,6 +44,9 @@ func ToSchema(src interface{}) (*bigquery.TableSchema, error) {
 					schema.Fields[i].Mode = "nullable"
 					if t, fields, err := structConversion(v.Interface()); err == nil {
 						schema.Fields[i].Type = t
+						if t == "string" {
+							schema.Fields[i].Mode = "required"
+						}
 						schema.Fields[i].Fields = fields
 					} else {
 						return schema, err
@@ -105,7 +109,9 @@ func simpleType(kind reflect.Kind) (string, bool) {
 
 func structConversion(src interface{}) (string, []*bigquery.TableFieldSchema, error) {
 	v := reflect.ValueOf(src)
-	if v.Type().ConvertibleTo(reflect.TypeOf(time.Time{})) {
+	if v.Type().Name() == "Key" && strings.Contains(v.Type().PkgPath(), "appengine") {
+		return "string", nil, nil
+	} else if v.Type().ConvertibleTo(reflect.TypeOf(time.Time{})) {
 		return "timestamp", nil, nil
 	} else {
 		schema, err := ToSchema(src)

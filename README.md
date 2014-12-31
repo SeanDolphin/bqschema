@@ -11,7 +11,7 @@ You can use BQSchema to automatically load Google Big Query results into arrays 
 package main
 
 import (
-	"code.google.com/p/google-api-go-client/bigquery/v2"
+	"google.golang.org/api/bigquery/v2"
 	"github.com/SeanDolphin/bqschema"
 )
 
@@ -41,7 +41,7 @@ You can also use BQSchema to create the schema fields when creating new Big Quer
 package main
 
 import (
-	"code.google.com/p/google-api-go-client/bigquery/v2"
+	"google.golang.org/api/bigquery/v2"
 	"github.com/SeanDolphin/bqschema"
 )
 
