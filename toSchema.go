@@ -27,9 +27,20 @@ func ToSchema(src interface{}) (*bigquery.TableSchema, error) {
 			sf := t.Field(i)
 			v := pointerGuard(value.Field(i))
 
+			var name string
+			jsonTag := sf.Tag.Get("json")
+			switch jsonTag {
+			case "-":
+				continue
+			case "":
+				name = sf.Name
+			default:
+				name = strings.Split(jsonTag, ",")[0]
+			}
+
 			schema.Fields[i] = &bigquery.TableFieldSchema{
 				Mode: "required",
-				Name: sf.Name,
+				Name: name,
 				Type: "",
 			}
 
