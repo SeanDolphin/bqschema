@@ -1,12 +1,12 @@
 package bqschema
 
 import (
-	"strings"
-	"google.golang.org/api/bigquery/v2"
-
 	"errors"
 	"reflect"
+	"strings"
 	"time"
+
+	"google.golang.org/api/bigquery/v2"
 )
 
 var (
@@ -22,7 +22,7 @@ func ToSchema(src interface{}) (*bigquery.TableSchema, error) {
 	schema := &bigquery.TableSchema{}
 
 	if t.Kind() == reflect.Struct {
-		schema.Fields = make([]*bigquery.TableFieldSchema, t.NumField())
+		schema.Fields = make([]*bigquery.TableFieldSchema, 0, t.NumField())
 		for i := 0; i < t.NumField(); i++ {
 			sf := t.Field(i)
 			v := pointerGuard(value.Field(i))
@@ -38,32 +38,33 @@ func ToSchema(src interface{}) (*bigquery.TableSchema, error) {
 				name = strings.Split(jsonTag, ",")[0]
 			}
 
-			schema.Fields[i] = &bigquery.TableFieldSchema{
+			tfs := &bigquery.TableFieldSchema{
 				Mode: "required",
 				Name: name,
 				Type: "",
 			}
+			schema.Fields = append(schema.Fields, tfs)
 
 			kind := v.Kind()
 			t, isSimple := simpleType(kind)
 
 			if isSimple {
-				schema.Fields[i].Type = t
+				tfs.Type = t
 			} else {
 				switch kind {
 				case reflect.Struct:
-					schema.Fields[i].Mode = "nullable"
+					tfs.Mode = "nullable"
 					if t, fields, err := structConversion(v.Interface()); err == nil {
-						schema.Fields[i].Type = t
+						tfs.Type = t
 						if t == "string" {
-							schema.Fields[i].Mode = "required"
+							tfs.Mode = "required"
 						}
-						schema.Fields[i].Fields = fields
+						tfs.Fields = fields
 					} else {
 						return schema, err
 					}
 				case reflect.Array, reflect.Slice:
-					schema.Fields[i].Mode = "repeated"
+					tfs.Mode = "repeated"
 					subKind := pointerGuard(v.Type().Elem()).Kind()
 					t, isSimple := simpleType(subKind)
 					if isSimple {
