@@ -1,13 +1,12 @@
-package bqschema_test
+package bqschema
 
 import (
-	"github.com/SeanDolphin/bqschema"
-	"google.golang.org/api/bigquery/v2"
-
 	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"google.golang.org/api/bigquery/v2"
 )
 
 var _ = Describe("ToSchema", func() {
@@ -623,7 +622,7 @@ var _ = Describe("ToSchema", func() {
 			object := data[0]
 			schema := data[1]
 			It(data[2].(string), func() {
-				result, err := bqschema.ToSchema(object)
+				result, err := ToSchema(object)
 				Expect(err).To(BeNil())
 				Expect(*result).To(Equal(schema))
 			})
@@ -634,22 +633,22 @@ var _ = Describe("ToSchema", func() {
 		table := [][]interface{}{
 			[]interface{}{
 				1,
-				bqschema.NotStruct,
+				NotStruct,
 				"not convert ints to schema",
 			},
 			[]interface{}{
 				1.0,
-				bqschema.NotStruct,
+				NotStruct,
 				"not convert floats to schema",
 			},
 			[]interface{}{
 				"some string",
-				bqschema.NotStruct,
+				NotStruct,
 				"not convert strings to schema",
 			},
 			[]interface{}{
 				false,
-				bqschema.NotStruct,
+				NotStruct,
 				"not convert  bools schema",
 			},
 		}
@@ -657,7 +656,7 @@ var _ = Describe("ToSchema", func() {
 			object := data[0]
 			expectedError := data[1]
 			It(data[2].(string), func() {
-				_, err := bqschema.ToSchema(object)
+				_, err := ToSchema(object)
 				Expect(err).NotTo(BeNil())
 				Expect(err).To(Equal(expectedError))
 			})

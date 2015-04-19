@@ -1,13 +1,12 @@
-package bqschema_test
+package bqschema
 
 import (
-	"github.com/SeanDolphin/bqschema"
-	"google.golang.org/api/bigquery/v2"
-
 	"reflect"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"google.golang.org/api/bigquery/v2"
 )
 
 var _ = Describe("ToStructs", func() {
@@ -76,7 +75,7 @@ var _ = Describe("ToStructs", func() {
 
 			var dst []test1
 
-			err := bqschema.ToStructs(response, &dst)
+			err := ToStructs(response, &dst)
 			Expect(err).To(BeNil())
 			Expect(reflect.DeepEqual(expectedResult, dst)).To(BeTrue())
 		})
@@ -145,7 +144,7 @@ var _ = Describe("ToStructs", func() {
 
 			var dst []test2
 
-			err := bqschema.ToStructs(response, &dst)
+			err := ToStructs(response, &dst)
 			Expect(err).To(BeNil())
 			Expect(reflect.DeepEqual(expectedResult, dst)).To(BeTrue())
 		})
@@ -234,7 +233,7 @@ var _ = Describe("ToStructs", func() {
 
 			var dst []test3
 
-			err := bqschema.ToStructs(response, &dst)
+			err := ToStructs(response, &dst)
 			Expect(err).To(BeNil())
 			Expect(reflect.DeepEqual(expectedResult, dst)).To(BeTrue())
 		})
@@ -313,7 +312,7 @@ var _ = Describe("ToStructs", func() {
 
 			var dst []test4
 
-			err := bqschema.ToStructs(response, &dst)
+			err := ToStructs(response, &dst)
 			Expect(err).To(BeNil())
 			Expect(reflect.DeepEqual(expectedResult, dst)).To(BeTrue())
 		})
