@@ -1,13 +1,11 @@
 package bqschema
 
 import (
-	"google.golang.org/api/bigquery/v2"
-
 	"reflect"
 	"strconv"
 	"strings"
 
-	// "log"
+	"google.golang.org/api/bigquery/v2"
 )
 
 func ToStructs(result *bigquery.QueryResponse, dst interface{}) error {

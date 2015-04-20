@@ -1,14 +1,12 @@
-package bqschema_test
+package bqschema
 
 import (
-	"github.com/SeanDolphin/bqschema"
-	"google.golang.org/api/bigquery/v2"
-
-	"reflect"
 	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"google.golang.org/api/bigquery/v2"
 )
 
 var _ = Describe("ToSchema", func() {
@@ -47,6 +45,22 @@ var _ = Describe("ToSchema", func() {
 					},
 				},
 				"should convert simple structs",
+			},
+			[]interface{}{
+				struct {
+					Included string
+					Excluded string `json:"-"`
+				}{},
+				bigquery.TableSchema{
+					Fields: []*bigquery.TableFieldSchema{
+						&bigquery.TableFieldSchema{
+							Mode: "required",
+							Name: "Included",
+							Type: "string",
+						},
+					},
+				},
+				`should ignore struct fields when the field's tag is "-"`,
 			},
 			[]interface{}{
 				struct {
@@ -608,9 +622,9 @@ var _ = Describe("ToSchema", func() {
 			object := data[0]
 			schema := data[1]
 			It(data[2].(string), func() {
-				result, err := bqschema.ToSchema(object)
+				result, err := ToSchema(object)
 				Expect(err).To(BeNil())
-				Expect(reflect.DeepEqual(schema, *result)).To(BeTrue())
+				Expect(*result).To(Equal(schema))
 			})
 		}
 	})
@@ -619,32 +633,32 @@ var _ = Describe("ToSchema", func() {
 		table := [][]interface{}{
 			[]interface{}{
 				1,
-				bqschema.NotStruct,
+				NotStruct,
 				"not convert ints to schema",
 			},
 			[]interface{}{
 				1.0,
-				bqschema.NotStruct,
+				NotStruct,
 				"not convert floats to schema",
 			},
 			[]interface{}{
 				"some string",
-				bqschema.NotStruct,
+				NotStruct,
 				"not convert strings to schema",
 			},
 			[]interface{}{
 				false,
-				bqschema.NotStruct,
+				NotStruct,
 				"not convert  bools schema",
 			},
 		}
 		for _, data := range table {
 			object := data[0]
-			exceptedError := data[1]
+			expectedError := data[1]
 			It(data[2].(string), func() {
-				_, err := bqschema.ToSchema(object)
+				_, err := ToSchema(object)
 				Expect(err).NotTo(BeNil())
-				Expect(err).To(Equal(exceptedError))
+				Expect(err).To(Equal(expectedError))
 			})
 		}
 	})
