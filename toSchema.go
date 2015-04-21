@@ -25,6 +25,9 @@ func ToSchema(src interface{}) (*bigquery.TableSchema, error) {
 		schema.Fields = make([]*bigquery.TableFieldSchema, 0, t.NumField())
 		for i := 0; i < t.NumField(); i++ {
 			sf := t.Field(i)
+			if sf.PkgPath != "" { // unexported
+				continue
+			}
 			v := pointerGuard(value.Field(i))
 
 			var name string

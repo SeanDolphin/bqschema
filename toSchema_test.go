@@ -48,8 +48,9 @@ var _ = Describe("ToSchema", func() {
 			},
 			[]interface{}{
 				struct {
-					Included string
-					Excluded string `json:"-"`
+					Included   string
+					Excluded   string `json:"-"`
+					unexported string
 				}{},
 				bigquery.TableSchema{
 					Fields: []*bigquery.TableFieldSchema{
@@ -60,7 +61,7 @@ var _ = Describe("ToSchema", func() {
 						},
 					},
 				},
-				`should ignore struct fields when the field's tag is "-"`,
+				`should ignore struct fields when the field's tag is "-" or the field is not exported`,
 			},
 			[]interface{}{
 				struct {
