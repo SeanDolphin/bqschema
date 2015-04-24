@@ -1,4 +1,5 @@
 # BQSchema [![wercker status](https://app.wercker.com/status/c3ce047415c3b4ba6ac9bc5ad26d1747/s "wercker status")](https://app.wercker.com/project/bykey/c3ce047415c3b4ba6ac9bc5ad26d1747) [![GoDoc](https://godoc.org/github.com/SeanDolphin/bqschema?status.png)](http://godoc.org/github.com/SeanDolphin/bqschema)
+[![Build Status](https://travis-ci.org/SeanDolphin/bqschema.svg?branch=master)](https://travis-ci.org/SeanDolphin/bqschema)
 
 BQSchema is a package used to created Google Big Query schema directly from Go structs and import BigQuery QueryResponse into arrays of Go structs.
 
