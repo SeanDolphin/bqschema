@@ -19,7 +19,17 @@ func ToStructs(result *bigquery.QueryResponse, dst interface{}) error {
 
 	for i := 0; i < itemType.NumField(); i++ {
 		field := itemType.Field(i)
-		nameMap[strings.ToLower(field.Name)] = field.Name
+		jsonTag := field.Tag.Get("json")
+		switch jsonTag {
+		case "-":
+			continue
+		case "":
+			nameMap[strings.ToLower(field.Name)] = field.Name
+		default:
+			jsonName := strings.Split(jsonTag, ",")[0]
+			nameMap[jsonName] = field.Name
+		}
+
 	}
 
 	items := reflect.MakeSlice(value.Type(), rowCount, rowCount)
@@ -34,6 +44,10 @@ func ToStructs(result *bigquery.QueryResponse, dst interface{}) error {
 				if field.IsValid() {
 					switch field.Kind() {
 					case reflect.Float64, reflect.Float32:
+						if cell.V == nil {
+							field.SetFloat(0)
+							continue
+						}
 						f, err := strconv.ParseFloat(cell.V.(string), 64)
 						if err == nil {
 							field.SetFloat(f)
@@ -41,6 +55,10 @@ func ToStructs(result *bigquery.QueryResponse, dst interface{}) error {
 							return err
 						}
 					case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+						if cell.V == nil {
+							field.SetInt(0)
+							continue
+						}
 						i, err := strconv.ParseInt(cell.V.(string), 10, 64)
 						if err == nil {
 							field.SetInt(i)
@@ -48,6 +66,10 @@ func ToStructs(result *bigquery.QueryResponse, dst interface{}) error {
 							return err
 						}
 					case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+						if cell.V == nil {
+							field.SetUint(0)
+							continue
+						}
 						i, err := strconv.ParseUint(cell.V.(string), 10, 64)
 						if err == nil {
 							field.SetUint(i)
@@ -56,6 +78,10 @@ func ToStructs(result *bigquery.QueryResponse, dst interface{}) error {
 						}
 
 					case reflect.Bool:
+						if cell.V == nil {
+							field.SetBool(false)
+							continue
+						}
 						b, err := strconv.ParseBool(cell.V.(string))
 						if err == nil {
 							field.SetBool(b)
@@ -63,6 +89,10 @@ func ToStructs(result *bigquery.QueryResponse, dst interface{}) error {
 							return err
 						}
 					case reflect.String:
+						if cell.V == nil {
+							field.SetString("")
+							continue
+						}
 						field.Set(reflect.ValueOf(cell.V))
 					}
 

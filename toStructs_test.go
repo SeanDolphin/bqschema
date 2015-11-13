@@ -149,6 +149,75 @@ var _ = Describe("ToStructs", func() {
 			Expect(reflect.DeepEqual(expectedResult, dst)).To(BeTrue())
 		})
 
+		It("will fill an array of structs of simple types whos names match the JSON tag", func() {
+			response := &bigquery.QueryResponse{
+				Schema: &bigquery.TableSchema{
+					Fields: []*bigquery.TableFieldSchema{
+						&bigquery.TableFieldSchema{
+							Mode: "required",
+							Name: "alpha",
+							Type: "INTEGER",
+						},
+						&bigquery.TableFieldSchema{
+							Mode: "required",
+							Name: "beta",
+							Type: "FLOAT",
+						},
+						&bigquery.TableFieldSchema{
+							Mode: "required",
+							Name: "gamma",
+							Type: "STRING",
+						},
+						&bigquery.TableFieldSchema{
+							Mode: "required",
+							Name: "delta",
+							Type: "BOOLEAN",
+						},
+					},
+				},
+				Rows: []*bigquery.TableRow{
+					&bigquery.TableRow{
+						F: []*bigquery.TableCell{
+							&bigquery.TableCell{
+								V: "1",
+							},
+							&bigquery.TableCell{
+								V: "2.0",
+							},
+							&bigquery.TableCell{
+								V: "some",
+							},
+							&bigquery.TableCell{
+								V: "false",
+							},
+						},
+					},
+				},
+			}
+
+			type test1 struct {
+				A int     `json:"alpha"`
+				B float64 `json:"beta"`
+				C string  `json:"gamma"`
+				D bool    `json:"delta"`
+			}
+
+			expectedResult := []test1{
+				test1{
+					A: 1,
+					B: 2.0,
+					C: "some",
+					D: false,
+				},
+			}
+
+			var dst []test1
+
+			err := ToStructs(response, &dst)
+			Expect(err).To(BeNil())
+			Expect(reflect.DeepEqual(expectedResult, dst)).To(BeTrue())
+		})
+
 		It("will fill an array of structs of non standard types", func() {
 			response := &bigquery.QueryResponse{
 				Schema: &bigquery.TableSchema{
@@ -311,6 +380,75 @@ var _ = Describe("ToStructs", func() {
 			}
 
 			var dst []test4
+
+			err := ToStructs(response, &dst)
+			Expect(err).To(BeNil())
+			Expect(reflect.DeepEqual(expectedResult, dst)).To(BeTrue())
+		})
+
+		It("will handle nullable fields", func() {
+			response := &bigquery.QueryResponse{
+				Schema: &bigquery.TableSchema{
+					Fields: []*bigquery.TableFieldSchema{
+						&bigquery.TableFieldSchema{
+							Mode: "NULLABLE",
+							Name: "i",
+							Type: "INTEGER",
+						},
+						&bigquery.TableFieldSchema{
+							Mode: "NULLABLE",
+							Name: "s",
+							Type: "STRING",
+						},
+						&bigquery.TableFieldSchema{
+							Mode: "NULLABLE",
+							Name: "f",
+							Type: "FLOAT",
+						},
+						&bigquery.TableFieldSchema{
+							Mode: "NULLABLE",
+							Name: "b",
+							Type: "BOOLEAN",
+						},
+					},
+				},
+				Rows: []*bigquery.TableRow{
+					&bigquery.TableRow{
+						F: []*bigquery.TableCell{
+							&bigquery.TableCell{
+								V: nil,
+							},
+							&bigquery.TableCell{
+								V: nil,
+							},
+							&bigquery.TableCell{
+								V: nil,
+							},
+							&bigquery.TableCell{
+								V: nil,
+							},
+						},
+					},
+				},
+			}
+
+			type test5 struct {
+				I int
+				S string
+				F float32
+				B bool
+			}
+
+			expectedResult := []test5{
+				test5{
+					I: 0,
+					S: "",
+					F: 0.0,
+					B: false,
+				},
+			}
+
+			var dst []test5
 
 			err := ToStructs(response, &dst)
 			Expect(err).To(BeNil())
