@@ -317,5 +317,74 @@ var _ = Describe("ToStructs", func() {
 			Expect(reflect.DeepEqual(expectedResult, dst)).To(BeTrue())
 		})
 
+		It("will handle nullable fields", func() {
+			response := &bigquery.QueryResponse{
+				Schema: &bigquery.TableSchema{
+					Fields: []*bigquery.TableFieldSchema{
+						&bigquery.TableFieldSchema{
+							Mode: "NULLABLE",
+							Name: "i",
+							Type: "INTEGER",
+						},
+						&bigquery.TableFieldSchema{
+							Mode: "NULLABLE",
+							Name: "s",
+							Type: "STRING",
+						},
+						&bigquery.TableFieldSchema{
+							Mode: "NULLABLE",
+							Name: "f",
+							Type: "FLOAT",
+						},
+						&bigquery.TableFieldSchema{
+							Mode: "NULLABLE",
+							Name: "b",
+							Type: "BOOLEAN",
+						},
+					},
+				},
+				Rows: []*bigquery.TableRow{
+					&bigquery.TableRow{
+						F: []*bigquery.TableCell{
+							&bigquery.TableCell{
+								V: nil,
+							},
+							&bigquery.TableCell{
+								V: nil,
+							},
+							&bigquery.TableCell{
+								V: nil,
+							},
+							&bigquery.TableCell{
+								V: nil,
+							},
+						},
+					},
+				},
+			}
+
+			type test5 struct {
+				I int
+				S string
+				F float32
+				B bool
+			}
+
+			expectedResult := []test5{
+				test5{
+					I: 0,
+					S: "",
+					F: 0.0,
+					B: false,
+				},
+			}
+
+			var dst []test5
+
+			err := ToStructs(response, &dst)
+			Expect(err).To(BeNil())
+			Expect(reflect.DeepEqual(expectedResult, dst)).To(BeTrue())
+		})
+
 	})
 })
