@@ -19,7 +19,17 @@ func ToStructs(result *bigquery.QueryResponse, dst interface{}) error {
 
 	for i := 0; i < itemType.NumField(); i++ {
 		field := itemType.Field(i)
-		nameMap[strings.ToLower(field.Name)] = field.Name
+		jsonTag := field.Tag.Get("json")
+		switch jsonTag {
+		case "-":
+			continue
+		case "":
+			nameMap[strings.ToLower(field.Name)] = field.Name
+		default:
+			jsonName := strings.Split(jsonTag, ",")[0]
+			nameMap[jsonName] = field.Name
+		}
+
 	}
 
 	items := reflect.MakeSlice(value.Type(), rowCount, rowCount)
